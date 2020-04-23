@@ -1,0 +1,150 @@
+<!--/*-->
+<!--* Name: Nishan He-->
+<!--* Andrew: nishanh-->
+<!--* */-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipe Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.min.css">
+    <link rel="stylesheet" type="text/css" href="myStyle.css">
+
+    <!--    coach mark package: intro.js from https://introjs.com/-->
+    <!-- Add IntroJs styles -->
+
+    <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.min.js"></script>
+</head>
+<body onload="loadThePage()">
+
+<h1 class="center">Recipe Calculator</h1>
+<!--initial version: only allows one recipe, later users can upload more recipes -->
+
+<p id="hiddenInfo" class="center">A calorie is a unit of energy.
+    <br>In nutrition, calories refer to the energy people get from the food and drink they consume,
+    <br>and the energy they use in physical activity.
+</p>
+
+<p id="completeness_meter_general" class="center" >You have created 0% to have a complete menu and refrigerator!</p>
+<div class="center">
+    <button id="btn_show_calculator" type="button" onclick="showCalculator()" style="display: none">Start</button>
+</div>
+
+<div id="calculator_container" class="center">
+<div class="center">
+    <br><button type="button" onclick="createRecipe()" data-step="1" data-intro="Here start creating your recipe">Create a recipe </button>
+    <button type="button" onclick="showMenu()" data-step="2" data-intro="Check recipes made by you" >Check menu</button>
+    <button id="btn_show_fridge" type="button" onclick="showFridge()" data-step="4" data-intro="Create and add food to your fridge">Show fridge</button>
+    <button id="btn_edit_fridge" type="button" onclick="updateFridge()" data-step="5" data-intro="Create and add food to your fridge">Edit fridge</button>
+    <button id="overflow" type="button" onclick="showMoreFunctions()" >More functions</button>
+</div>
+<div id="div_show_fridge" style="display: none" class="center"></div>
+<div id="div_edit_fridge" class="center" style="display: none">
+    <button type="button" onclick="showAddFoodFridge()">Add</button>
+    <button type="button" onclick="showConsumeFoodFridge()">Consume</button>
+
+    <div id="div_add_food" style="display: none">
+        <label for="input_add_food">Food: </label>
+        <input id="input_add_food">
+        <label for="input_add_food_weight">Weight: </label>
+        <input id="input_add_food_weight">
+
+        <button type="button" onclick="addFoodFridge()">Ok</button>
+    </div>
+    <div id="div_consume_food" style="display: none">
+        <label for="input_consume_food">Food: </label>
+        <input id="input_consume_food">
+        <label for="input_consume_food_weight">Weight: </label>
+        <input id="input_consume_food_weight">
+        <button type="button" onclick="consumeFoodFridge()">Ok</button>
+    </div>
+</div>
+
+<div id="menu" class="center" ></div>
+
+<div id="recipe" class="center" style="display: none">
+    <div id="div_recipe_name">
+        <label for="recipe_name">Recipe Name: </label>
+        <input type="text" id="recipe_name">
+    </div>
+    <p id="text_recipe_name"></p>
+    <p id="recipe_progress" class="center">Already finish 0% of your recipe </p>
+    <br><button id="btn_add_ingre_recipe" type="button" onclick="addIngreRecipe()"> Add an ingredient </button>
+
+    <div id="ingredient" style="display: none">
+        <label for="ingre_input">Ingredient name: </label>
+        <input type="text" id="ingre_input">
+        <!--    Display option from: https://www.geeksforgeeks.org/hide-or-show-elements-in-html-using-display-property/-->
+        <select id="default_ingredient" onchange="chooseDefault()">
+
+        </select>
+        <br><button type="button" id="back_to_recipe_name" onclick="backToRecipeName()">Back</button>
+        <button type="button" id="move_to_weight" onclick="moveToWeight()">OK</button>
+    </div>
+
+    <div id="text_input_display"></div>
+    <div id="div_choose_unit" style="display: none">
+        <input type="radio" id="gram" name="unit" value="gram" checked="checked">
+        <label for="gram">g or ml</label><br>
+        <input type="radio" id="pound" name="unit" value="pound">
+        <label for="pound">pound or oz </label><br>
+    </div>
+    <div id="weight_div" style="display: none">
+        <br><label for="weight_input">Weight: </label>
+        <input type="text" id="weight_input" onmouseover="showInputHintWeight()">
+        <p id="text_invalid_weight"></p>
+        <p id="weight_hint" style="display: none">
+            Please input weight by grams or pounds!
+        </p>
+        <br> <button type="button" id="back_to_ingre" onclick="backToIngre()">Back</button>
+        <button type="button" id="move_to_caloires" onclick="moveToCalories()">OK</button>
+    </div>
+
+    <div id="calories_div" style="display: none">
+        <br><label for="calor_input">Calories: </label>
+        <input type="text" id="calor_input" onmouseover="showInputHintCalor()">
+        <p id="text_invalid_calories"></p>
+        <p id="calories_hint" style="display: none">Please input calories based on 100g or 1 pound food!
+            <br> If it's liquid, input calories on 8 fl. oz. (240 ml)</p>
+        <div class="container" id="help_popover">
+            <a href="#" data-toggle="popover" title="Calories for common ingredients"
+               data-content="100g sugar: 386.7 kcal
+                      100g egg: 155.1 kcal">
+                Check out some calories information</a>
+        </div>
+
+        <button type="button" id="back_to_weight" onclick="backToWeight()">Back</button>
+    </div>
+<div class="center">
+    <button id="btn_submit_ingre" type="button" onclick="submitIngredient()" style="display: none">Submit Ingredient</button>
+
+    <br><button id="btn_submit_recipe" type="button" onclick="finishRecipe()" style="display: none">Finish Recipe</button>
+
+    <p id="result"></p>
+</div>
+</div>
+
+    <div class="center" >
+    <a href="https://www.calories.info/food/fruit-juices" data-step="3" data-intro="Check more calories information to fill your recipe scientifically">
+        Want to have more calories information?</a>
+    </div>
+<!--    display total calories-->
+
+</div>
+<div class="center">
+<br><p id="total_cal" class="center"></p>
+<p id="feature_more_recipe">Try "check menu" to view all your recipes</p>
+<p id="feature_switch_unit">Try switch to pounds or grams </p>
+<p id="feature_fridge">You can add food to your fridge according to your recipe</p>
+
+<p id="next_step"></p>
+</div>
+    <script type="text/javascript" src="calculator.js"></script>
+
+</body>
+</html>
